@@ -19,4 +19,5 @@ public class Product extends BaseEntity {
     private String name;
     private int price;
     private int stockQuantity;
+    private String description;
 }

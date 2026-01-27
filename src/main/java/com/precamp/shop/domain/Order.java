@@ -7,6 +7,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 import static jakarta.persistence.CascadeType.*;
 
 
@@ -19,8 +21,10 @@ public class Order extends BaseEntity {
     @GeneratedValue
     @Column(name = "order_id")
     private Long id;
+    private int orderCount;
     @ManyToOne @JoinColumn(name = "product_id")
     private Product product;
+    private LocalDateTime orderDate;
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
 }
