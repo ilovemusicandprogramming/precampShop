@@ -3,13 +3,13 @@ package com.precamp.shop.controller;
 import com.precamp.shop.common.ApiResponse;
 import com.precamp.shop.domain.Product;
 import com.precamp.shop.dto.ProductListResponse;
+import com.precamp.shop.dto.ProductRequest;
 import com.precamp.shop.dto.ProductResponse;
 import com.precamp.shop.service.ProductService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -22,13 +22,28 @@ public class ProductController {
 
     @GetMapping
     public ApiResponse<List<ProductListResponse>> getProducts(){
-        return ApiResponse.success(productService.findProducts().stream()
-                .map(ProductListResponse::new)
-                .toList(), "상품 목록 조회 성공");
+        return ApiResponse.success(productService.findProducts(), "상품 목록 조회 성공");
     }
 
-    @GetMapping("/id")
+    @GetMapping("/{id}")
     public ApiResponse<ProductResponse> getProduct(@PathVariable("id") Long id){
-        return ApiResponse.success(ProductResponse.from(productService.findProduct(id)), "상품 목록 조회 성공");
+        return ApiResponse.success(productService.findProduct(id), "상품 목록 조회 성공");
+    }
+
+    @PostMapping
+    public ApiResponse<ProductResponse> createProduct(@RequestBody @Valid ProductRequest request) {
+        return ApiResponse.success(productService.createProduct(request.name(), request.price(), request.stockQuantity(), request.description()),"상품 등록 완료");
+    }
+
+    @PatchMapping("/{id}")
+    public ApiResponse<ProductResponse> updateProduct(@PathVariable("id") Long id,
+                                                      @RequestBody @Valid ProductRequest request) {
+        return ApiResponse.success(productService.updateProduct(id, request.name(), request.price(), request.stockQuantity(), request.description()),"상품 수정 완료");
+    }
+
+    @DeleteMapping("/{id}")
+    public ApiResponse<Void> deleteProduct(@PathVariable("id") Long id) {
+        productService.deleteProduct(id);
+        return ApiResponse.success("게시글이 삭제되었습니다");
     }
 }

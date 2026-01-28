@@ -2,6 +2,7 @@ package com.precamp.shop.domain;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.precamp.shop.common.BaseEntity;
+import com.precamp.shop.domain.status.ProductStatus;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -19,5 +20,32 @@ public class Product extends BaseEntity {
     private String name;
     private int price;
     private int stockQuantity;
+    private ProductStatus status;
     private String description;
+
+    public static Product createProduct(String name, int price, int stockQuantity, String description) {
+        Product product = new Product();
+
+        product.name = name;
+        product.price = price;
+        product.stockQuantity = stockQuantity;
+        product.description = description;
+        product.status = ProductStatus.FOR_SALE;
+
+        return product;
+    }
+
+    public void updateProduct(String name, int price, int stockQuantity, String description) {
+        if(this.status == ProductStatus.DELETED){
+            throw new IllegalStateException("이미 삭제된 상품의 정보는 수정할 수 없습니다.");
+        }
+        this.name = name;
+        this.price = price;
+        this.stockQuantity = stockQuantity;
+        this.description = description;
+    }
+
+    public void changeStatusToDeleted() {
+        this.status = ProductStatus.DELETED;
+    }
 }
