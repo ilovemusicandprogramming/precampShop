@@ -27,7 +27,7 @@ public class ProductController {
 
     @GetMapping("/{id}")
     public ApiResponse<ProductResponse> getProduct(@PathVariable("id") Long id){
-        return ApiResponse.success(productService.findProduct(id), "상품 목록 조회 성공");
+        return ApiResponse.success(productService.findProduct(id), "상품 조회 성공");
     }
 
     @PostMapping

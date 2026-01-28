@@ -5,11 +5,10 @@ import java.time.LocalDateTime;
 
 public record OrderResponse(
         Long id,
-        Long productId,      // 어떤 상품을 주문했는지 ID값
-        String productName,  // 상품명
-        int orderPrice,      // 주문 당시 가격
-        int count,           // 주문 수량
-        int totalPrice,      // 총 결제 금액
+        Long productId,
+        String productName,
+        int count,
+        int orderPrice,
         LocalDateTime orderDate
 ) {
     public static OrderResponse from(Order order) {
@@ -17,9 +16,8 @@ public record OrderResponse(
                 order.getId(),
                 order.getProduct().getId(),
                 order.getProduct().getName(),
-                order.getProduct().getPrice(),
                 order.getOrderCount(),
-                order.getProduct().getPrice() * order.getOrderCount(),
+                order.getOrderPrice(),
                 order.getOrderDate()
         );
     }

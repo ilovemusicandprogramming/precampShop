@@ -1,7 +1,7 @@
 package com.precamp.shop.domain.status;
 
 public enum ProductStatus {
-    FOR_SALE,
+    ACTIVE,
     STOP_SALE,
     OUT_OF_STOCK,
     DELETED

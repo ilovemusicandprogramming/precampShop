@@ -30,7 +30,7 @@ public class Product extends BaseEntity {
         product.price = price;
         product.stockQuantity = stockQuantity;
         product.description = description;
-        product.status = ProductStatus.FOR_SALE;
+        product.status = ProductStatus.ACTIVE;
 
         return product;
     }
@@ -47,5 +47,27 @@ public class Product extends BaseEntity {
 
     public void changeStatusToDeleted() {
         this.status = ProductStatus.DELETED;
+    }
+
+    public void decreaseStock(int stock) {
+        int restStock = this.stockQuantity - stock;
+        if(restStock < 0){
+            throw new IllegalStateException("재고가 부족합니다");
+        }
+        this.stockQuantity = restStock;
+
+        // 재고가 0이 되면 품절 처리
+        if (this.stockQuantity == 0) {
+            this.status = ProductStatus.OUT_OF_STOCK;
+        }
+    }
+
+    public void increaseStock(int stock) {
+        this.stockQuantity += stock;
+
+        // 재고가 다시 생기면 판매중으로 변경
+        if (this.stockQuantity > 0 && this.status == ProductStatus.OUT_OF_STOCK) {
+            this.status = ProductStatus.ACTIVE;
+        }
     }
 }
