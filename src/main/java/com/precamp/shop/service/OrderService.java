@@ -45,14 +45,14 @@ public class OrderService {
     @Transactional
     public OrderResponse updateOrder(Long id, int orderCount) {
         Order order = getOrder(id);
-        order.updateOrder(orderCount);
+        order.changeOrderCount(orderCount);
         return OrderResponse.from(order);
     }
 
     @Transactional
-    public void deleteProduct(Long id) {
+    public void deleteOrder(Long id) {
         Order order = getOrder(id);
-        order.changeStatusToDeleted();
+        order.cancel();
     }
 
     //===== 기타메서드 =====

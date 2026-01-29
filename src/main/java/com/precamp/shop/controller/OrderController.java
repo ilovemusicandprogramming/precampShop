@@ -29,9 +29,10 @@ public class OrderController {
         return ApiResponse.success(orderService.findOrder(id), "주문 상세 조회 성공");
     }
 
-    @PostMapping
-    public ApiResponse<OrderResponse> createOrder(@RequestBody @Valid OrderRequest request) {
-        return ApiResponse.success(orderService.createOrder(request.productId(), request.orderCount()),"주문 완료");
+    @PostMapping("/{id}")
+    public ApiResponse<OrderResponse> createOrder(@PathVariable("id") Long id,
+                                                  @RequestBody @Valid OrderRequest request) {
+        return ApiResponse.success(orderService.createOrder(id, request.orderCount()),"주문 완료");
     }
 
     @PatchMapping("/{id}")
@@ -42,7 +43,7 @@ public class OrderController {
 
     @DeleteMapping("/{id}")
     public ApiResponse<Void> deleteOrder(@PathVariable("id") Long id) {
-        orderService.deleteProduct(id);
-        return ApiResponse.success("주문이 취소 되었습니다");
+        orderService.deleteOrder(id);
+        return ApiResponse.success("주문 취소 완료");
     }
 }

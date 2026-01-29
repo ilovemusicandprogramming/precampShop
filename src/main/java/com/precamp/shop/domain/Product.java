@@ -8,6 +8,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -21,6 +23,8 @@ public class Product extends BaseEntity {
     private int price;
     private int stockQuantity;
     private ProductStatus status;
+    @OneToMany(mappedBy = "product")
+    private List<Order> orders;
     private String description;
 
     public static Product createProduct(String name, int price, int stockQuantity, String description) {
@@ -49,6 +53,7 @@ public class Product extends BaseEntity {
         this.status = ProductStatus.DELETED;
     }
 
+    //==== 재고관리 ====
     public void decreaseStock(int stock) {
         int restStock = this.stockQuantity - stock;
         if(restStock < 0){
