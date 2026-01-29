@@ -1,14 +1,12 @@
 package com.precamp.shop.controller;
 
 import com.precamp.shop.common.ApiResponse;
-import com.precamp.shop.domain.Product;
 import com.precamp.shop.dto.ProductListResponse;
 import com.precamp.shop.dto.ProductRequest;
 import com.precamp.shop.dto.ProductResponse;
 import com.precamp.shop.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
