@@ -6,7 +6,8 @@ public record ProductListResponse(
         Long id,
         String name,
         int price,
-        int stockQuantity
+        int stockQuantity,
+        String description
 ) {
 
     public ProductListResponse(Product product) {
@@ -14,7 +15,9 @@ public record ProductListResponse(
                 product.getId(),
                 product.getName(),
                 product.getPrice(),
-                product.getStockQuantity()
+                product.getStockQuantity(),
+                product.getDescription()
+
         );
     }
 

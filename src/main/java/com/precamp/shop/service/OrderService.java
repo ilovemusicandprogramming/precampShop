@@ -39,7 +39,7 @@ public class OrderService {
         Product product = getProduct(productId);
         Order order = Order.createOrder(product, orderCount);
         orderRepository.save(order);
-        return null;
+        return OrderResponse.from(order);
     }
 
     @Transactional
@@ -56,8 +56,8 @@ public class OrderService {
     }
 
     //===== 기타메서드 =====
-    private Order getOrder(Long id) {
-        return orderRepository.findById(id)
+    private Order getOrder(Long orderId) {
+        return orderRepository.findById(orderId)
                 .orElseThrow(() -> new IllegalStateException("검색하신 주문은 존재하지 않습니다."));
     }
 
