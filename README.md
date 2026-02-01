@@ -100,7 +100,7 @@ com.precamp.shop
 
 ## 🚀 기술 스택
 
--   **Framework**: Spring Boot 3.x
+-   **Framework**: Spring Boot 4.0.2
 -   **Language**: Java 17
 -   **ORM**: Spring Data JPA (Hibernate)
 -   **Database**: H2 (In-memory)
