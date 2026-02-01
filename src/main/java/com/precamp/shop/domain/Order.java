@@ -30,6 +30,8 @@ public class Order extends BaseEntity {
     private OrderStatus status;
 
     public static Order createOrder(Product product, int orderCount) {
+        validateOrderCount(orderCount);
+
         // 수량 검증 후 재고 관리
         product.decreaseStock(orderCount);
 
@@ -37,7 +39,7 @@ public class Order extends BaseEntity {
 
         order.orderCount = orderCount;
         order.product = product;
-        order.orderPrice = product.getPrice();
+        order.orderPrice = product.getPrice() * orderCount;
         order.orderDate = LocalDateTime.now();
         order.status = OrderStatus.ORDER;
 
@@ -45,12 +47,10 @@ public class Order extends BaseEntity {
     }
 
     public void changeOrderCount(int newOrderCount) {
+        validateOrderCount(newOrderCount);
+
         if (this.status == OrderStatus.CANCEL) {
             throw new IllegalStateException("취소된 주문은 수정할 수 없습니다.");
-        }
-
-        if (newOrderCount <= 0) {
-            throw new IllegalArgumentException("주문 수량은 1개 이상이어야 합니다.");
         }
 
         int oldCount = this.orderCount;
@@ -77,5 +77,11 @@ public class Order extends BaseEntity {
 
         this.status = OrderStatus.CANCEL;
         this.product.increaseStock(this.orderCount);
+    }
+
+    private static void validateOrderCount(int orderCount) {
+        if (orderCount <= 0) {
+            throw new IllegalArgumentException("주문 수량은 1개 이상이어야 합니다.");
+        }
     }
 }

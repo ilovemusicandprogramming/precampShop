@@ -1,12 +1,17 @@
 package com.precamp.shop.common;
 
+import com.precamp.shop.dto.ProductCreateRequest;
 import com.precamp.shop.service.ProductService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Component
+@Profile({"local", "dev"})  // 로컬, 개발 환경에서만 실행
 @RequiredArgsConstructor
 public class InitDb {
 
@@ -21,17 +26,36 @@ public class InitDb {
     @Transactional
     @RequiredArgsConstructor
     static class InitService {
+
         private final ProductService productService;
 
         public void dbInit() {
-            // 초기 테스트 데이터들
-            productService.createProduct("아이폰 15 프로", 1550000, 10, "애플의 최신 스마트폰");
-            productService.createProduct("로지텍 키보드", 120000, 50, "사무용 기계식 키보드");
-            productService.createProduct("맥북 에어 M3", 1890000, 5, "가볍고 강력한 노트북");
-            productService.createProduct("에어팟 프로 2", 320000, 100, "노이즈 캔슬링 이어폰");
+            log.info("===== 초기 데이터 생성 시작 =====");
 
-            // 품절 테스트용 데이터 (재고 0)
-            productService.createProduct("단종된 마우스", 10000, 0, "이제는 구할 수 없는 마우스");
+            // 전자제품
+            createProduct("아이폰 15 프로", 1_550_000, 10, "애플의 최신 스마트폰");
+            createProduct("맥북 에어 M3", 1_890_000, 5, "가볍고 강력한 노트북");
+            createProduct("에어팟 프로 2", 320_000, 100, "노이즈 캔슬링 이어폰");
+
+            // 주변기기
+            createProduct("로지텍 MX Master 3", 120_000, 50, "프로용 무선 마우스");
+            createProduct("매직 키보드", 150_000, 30, "애플 매직 키보드");
+
+            // 품절 테스트용
+            createProduct("단종된 마우스", 10_000, 0, "재고 없음 - 테스트용");
+
+            log.info("===== 초기 데이터 생성 완료 =====");
+        }
+
+        private void createProduct(String name, int price, int stockQuantity, String description) {
+            ProductCreateRequest request = new ProductCreateRequest(
+                    name,
+                    price,
+                    stockQuantity,
+                    description
+            );
+            productService.createProduct(request);
+            log.debug("상품 생성: {}", name);
         }
     }
 }

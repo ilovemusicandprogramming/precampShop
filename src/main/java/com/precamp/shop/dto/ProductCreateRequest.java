@@ -2,9 +2,6 @@ package com.precamp.shop.dto;
 
 import jakarta.validation.constraints.*;
 
-/**
- * 상품 생성 요청 DTO
- */
 public record ProductCreateRequest(
 
         @NotBlank(message = "상품명은 필수입니다.")

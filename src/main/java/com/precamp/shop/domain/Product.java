@@ -39,6 +39,7 @@ public class Product extends BaseEntity {
         return product;
     }
 
+
     public void updateProduct(String name, int price, int stockQuantity, String description) {
         if(this.status == ProductStatus.DELETED){
             throw new IllegalStateException("이미 삭제된 상품의 정보는 수정할 수 없습니다.");

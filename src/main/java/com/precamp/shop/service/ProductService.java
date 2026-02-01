@@ -2,13 +2,12 @@ package com.precamp.shop.service;
 
 import com.precamp.shop.domain.Product;
 import com.precamp.shop.domain.status.ProductStatus;
+import com.precamp.shop.dto.ProductCreateRequest;
 import com.precamp.shop.dto.ProductListResponse;
-import com.precamp.shop.dto.ProductRequest;
+import com.precamp.shop.dto.ProductPatchRequest;
 import com.precamp.shop.dto.ProductResponse;
 import com.precamp.shop.repository.ProductRepository;
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,16 +32,16 @@ public class ProductService {
     }
 
     @Transactional
-    public ProductResponse createProduct(String name, int price, int stockQuantity, String description) {
-        Product product = Product.createProduct(name, price, stockQuantity, description);
+    public ProductResponse createProduct(ProductCreateRequest request) {
+        Product product = Product.createProduct(request.name(), request.price(), request.stockQuantity(), request.description());
         productRepository.save(product);
         return ProductResponse.from(product);
     }
 
     @Transactional
-    public ProductResponse updateProduct(Long id, String name, int price, int stockQuantity, String description) {
-        Product product = getProduct(id);
-        product.updateProduct(name, price, stockQuantity, description);
+    public ProductResponse updateProduct(Long productId, ProductPatchRequest request) {
+        Product product = getProduct(productId);
+        product.updateProduct(request.name(), request.price(), request.stockQuantity(), request.description());
         return ProductResponse.from(product);
     }
 
@@ -52,7 +51,7 @@ public class ProductService {
         product.changeStatusToDeleted();
     }
 
-    //==== 기타메서드 ====
+    //===== 기타메서드 =====
     private Product getProduct(Long productId) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new IllegalStateException("검색하신 상품은 존재하지 않습니다."));
