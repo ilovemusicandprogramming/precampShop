@@ -85,7 +85,18 @@ com.precamp.shop
 
 -   **해결**: 상품 조회 시 비관적락(PESSIMISTIC\_WRITE)을 사용하여, 트랜잭션이 완료될 때까지 다른 트랜잭션의 접근을 제어하고 정확한 재고 차감을 보장합니다.
 -   **비관적 락 선정 이유** : 주문 시스템은 동시 접근이 빈번하므로 비관적 락으로 순차 처리하여 재고 정합성을 보장하기에 용이했습니다. 낙관적락의 경우 충돌 시 재시도 부담이 크게 때문에 이 경우에는 부적합하다고 판단했습니다. 
+```java
+//OrderService.java
+private Product getProduct(Long productId) {
+    return productRepository.findByIdWithLock(productId)
+            .orElseThrow(() -> new ProductNotFoundException(productId));
+}
 
+//ProductRepository.java
+@Lock(LockModeType.PESSIMISTIC_WRITE)
+@Query("SELECT p FROM Product p WHERE p.id = :id AND p.status != 'DELETED'")
+Optional<Product> findByIdWithLock(@Param("id") Long id);
+```
 ---
 
 ## 🌐 API 엔드포인트
