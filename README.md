@@ -25,8 +25,8 @@ com.precamp.shop
  │   └── 📁 status               # 도메인 상태값 (Enum)
  │
  ├── 📁 dto
- │   ├── ProductRequest/Response # 상품 관련 DTO
- │   └── OrderRequest/Response   # 주문 관련 DTO
+ │   ├── Product                 # 상품 관련 DTO
+ │   └── Order                   # 주문 관련 DTO
  │
  ├── 📁 exception
  │   └── BusinessException       # 커스텀 비즈니스 예외들
