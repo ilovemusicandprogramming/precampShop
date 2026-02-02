@@ -3,6 +3,8 @@ package com.precamp.shop.domain;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.precamp.shop.common.BaseEntity;
 import com.precamp.shop.domain.status.ProductStatus;
+import com.precamp.shop.exception.InsufficientStockException;
+import com.precamp.shop.exception.ProductAlreadyDeletedException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -22,6 +24,7 @@ public class Product extends BaseEntity {
     private String name;
     private int price;
     private int stockQuantity;
+    @Enumerated(EnumType.STRING)
     private ProductStatus status;
     @OneToMany(mappedBy = "product")
     private List<Order> orders;
@@ -39,10 +42,9 @@ public class Product extends BaseEntity {
         return product;
     }
 
-
     public void updateProduct(String name, int price, int stockQuantity, String description) {
         if(this.status == ProductStatus.DELETED){
-            throw new IllegalStateException("이미 삭제된 상품의 정보는 수정할 수 없습니다.");
+            throw new ProductAlreadyDeletedException();
         }
         this.name = name;
         this.price = price;
@@ -58,7 +60,7 @@ public class Product extends BaseEntity {
     public void decreaseStock(int stock) {
         int restStock = this.stockQuantity - stock;
         if(restStock < 0){
-            throw new IllegalStateException("재고가 부족합니다");
+            throw new InsufficientStockException(this.name, restStock, this.stockQuantity);
         }
         this.stockQuantity = restStock;
 

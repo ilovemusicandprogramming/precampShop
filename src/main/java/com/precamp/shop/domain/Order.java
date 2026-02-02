@@ -2,6 +2,8 @@ package com.precamp.shop.domain;
 
 import com.precamp.shop.common.BaseEntity;
 import com.precamp.shop.domain.status.OrderStatus;
+import com.precamp.shop.exception.InvalidOrderQuantityException;
+import com.precamp.shop.exception.OrderAlreadyCancelledException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -48,10 +50,7 @@ public class Order extends BaseEntity {
 
     public void changeOrderCount(int newOrderCount) {
         validateOrderCount(newOrderCount);
-
-        if (this.status == OrderStatus.CANCEL) {
-            throw new IllegalStateException("취소된 주문은 수정할 수 없습니다.");
-        }
+        validateNotCancelled();
 
         int oldCount = this.orderCount;
         int difference = newOrderCount - oldCount;
@@ -71,17 +70,22 @@ public class Order extends BaseEntity {
     }
 
     public void cancel() {
-        if (this.status == OrderStatus.CANCEL) {
-            throw new IllegalStateException("이미 취소된 주문입니다.");
-        }
+        validateNotCancelled();
 
         this.status = OrderStatus.CANCEL;
         this.product.increaseStock(this.orderCount);
     }
 
+    //==== 검증 메서드 ====
     private static void validateOrderCount(int orderCount) {
         if (orderCount <= 0) {
-            throw new IllegalArgumentException("주문 수량은 1개 이상이어야 합니다.");
+            throw new InvalidOrderQuantityException(orderCount);
+        }
+    }
+
+    private void validateNotCancelled() {
+        if (this.status == OrderStatus.CANCEL) {
+            throw new OrderAlreadyCancelledException();
         }
     }
 }

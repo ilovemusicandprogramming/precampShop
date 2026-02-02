@@ -6,6 +6,8 @@ import com.precamp.shop.dto.OrderCreateRequest;
 import com.precamp.shop.dto.OrderListResponse;
 import com.precamp.shop.dto.OrderResponse;
 import com.precamp.shop.dto.OrderUpdateRequest;
+import com.precamp.shop.exception.OrderNotFoundException;
+import com.precamp.shop.exception.ProductNotFoundException;
 import com.precamp.shop.repository.OrderRepository;
 import com.precamp.shop.repository.ProductRepository;
 import lombok.AllArgsConstructor;
@@ -56,11 +58,11 @@ public class OrderService {
     //===== 기타메서드 =====
     private Order getOrder(Long orderId) {
         return orderRepository.findById(orderId)
-                .orElseThrow(() -> new IllegalStateException("검색하신 주문은 존재하지 않습니다."));
+                .orElseThrow(() -> new OrderNotFoundException(orderId));
     }
 
     private Product getProduct(Long productId) {
         return productRepository.findById(productId)
-                .orElseThrow(() -> new IllegalStateException("검색하신 상품은 존재하지 않습니다."));
+                .orElseThrow(() -> new ProductNotFoundException(productId));
     }
 }

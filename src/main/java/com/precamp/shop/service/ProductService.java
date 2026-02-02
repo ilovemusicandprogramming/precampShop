@@ -6,6 +6,7 @@ import com.precamp.shop.dto.ProductCreateRequest;
 import com.precamp.shop.dto.ProductListResponse;
 import com.precamp.shop.dto.ProductPatchRequest;
 import com.precamp.shop.dto.ProductResponse;
+import com.precamp.shop.exception.ProductNotFoundException;
 import com.precamp.shop.repository.ProductRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -54,7 +55,7 @@ public class ProductService {
     //===== 기타메서드 =====
     private Product getProduct(Long productId) {
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new IllegalStateException("검색하신 상품은 존재하지 않습니다."));
+                .orElseThrow(() -> new ProductNotFoundException("검색하신 상품은 존재하지 않습니다."));
 
         if (product.getStatus() == ProductStatus.DELETED) {
             throw new IllegalStateException("이미 삭제된 상품입니다.");
