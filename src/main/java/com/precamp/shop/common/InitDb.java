@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Component
-@Profile({"local", "dev"})  // 로컬, 개발 환경에서만 실행
 @RequiredArgsConstructor
 public class InitDb {
 

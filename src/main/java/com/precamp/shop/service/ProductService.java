@@ -6,7 +6,9 @@ import com.precamp.shop.dto.ProductCreateRequest;
 import com.precamp.shop.dto.ProductListResponse;
 import com.precamp.shop.dto.ProductPatchRequest;
 import com.precamp.shop.dto.ProductResponse;
+import com.precamp.shop.exception.ProductCannotBeDeletedException;
 import com.precamp.shop.exception.ProductNotFoundException;
+import com.precamp.shop.repository.OrderRepository;
 import com.precamp.shop.repository.ProductRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,7 @@ import java.util.List;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final OrderRepository orderRepository;
 
     @Transactional(readOnly = true)
     public List<ProductListResponse> findProducts() {
@@ -28,8 +31,8 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public ProductResponse findProduct(Long id) {
-        return ProductResponse.from(getProduct(id));
+    public ProductResponse findProduct(Long productId) {
+        return ProductResponse.from(getProduct(productId));
     }
 
     @Transactional
@@ -47,8 +50,9 @@ public class ProductService {
     }
 
     @Transactional
-    public void deleteProduct(Long id) {
-        Product product = getProduct(id);
+    public void deleteProduct(Long productId) {
+        Product product = getProduct(productId);
+        validateNoOrderHistory(productId);
         product.changeStatusToDeleted();
     }
 
@@ -61,5 +65,11 @@ public class ProductService {
             throw new IllegalStateException("이미 삭제된 상품입니다.");
         }
         return product;
+    }
+
+    private void validateNoOrderHistory(Long productId) {
+        if (orderRepository.existsByProductId(productId)) {
+            throw new ProductCannotBeDeletedException("주문 내역이 있는 상품은 삭제할 수 없습니다.");
+        }
     }
 }

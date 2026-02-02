@@ -1,6 +1,8 @@
 package com.precamp.shop.dto;
 
 import com.precamp.shop.domain.Product;
+import com.precamp.shop.domain.status.ProductStatus;
+
 import java.time.LocalDateTime;
 
 public record ProductResponse(
@@ -9,6 +11,7 @@ public record ProductResponse(
         String description,
         int price,
         int stockQuantity,
+        ProductStatus status,
         LocalDateTime createdAt
 ) {
     public ProductResponse(Product product) {
@@ -18,6 +21,7 @@ public record ProductResponse(
                 product.getDescription(),
                 product.getPrice(),
                 product.getStockQuantity(),
+                product.getStatus(),
                 product.getCreatedAt()
         );
     }

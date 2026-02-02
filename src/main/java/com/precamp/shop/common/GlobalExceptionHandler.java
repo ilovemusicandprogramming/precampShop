@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(IllegalStateException.class)
-    public ApiResponse<Void> handleIllegalStateException(IllegalStateException e) {
+    @ExceptionHandler(RuntimeException.class)
+    public ApiResponse<Void> handleIllegalStateException(RuntimeException e) {
         return ApiResponse.success(null, e.getMessage());
     }
 }

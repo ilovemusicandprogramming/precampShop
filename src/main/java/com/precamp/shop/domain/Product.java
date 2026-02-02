@@ -42,14 +42,25 @@ public class Product extends BaseEntity {
         return product;
     }
 
-    public void updateProduct(String name, int price, int stockQuantity, String description) {
+    public void updateProduct(String name, Integer price, Integer stockQuantity, String description) {
         if(this.status == ProductStatus.DELETED){
             throw new ProductAlreadyDeletedException();
         }
-        this.name = name;
-        this.price = price;
-        this.stockQuantity = stockQuantity;
-        this.description = description;
+        if (name != null) {
+            this.name = name;
+        }
+
+        if (price != null) {
+            this.price = price;
+        }
+
+        if (stockQuantity != null) {
+            this.stockQuantity = stockQuantity;
+        }
+
+        if (description != null) {
+            this.description = description;
+        }
     }
 
     public void changeStatusToDeleted() {

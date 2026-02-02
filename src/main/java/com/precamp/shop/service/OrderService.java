@@ -62,7 +62,7 @@ public class OrderService {
     }
 
     private Product getProduct(Long productId) {
-        return productRepository.findById(productId)
+        return productRepository.findByIdWithLock(productId)
                 .orElseThrow(() -> new ProductNotFoundException(productId));
     }
 }
