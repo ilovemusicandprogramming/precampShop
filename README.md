@@ -6,6 +6,7 @@ Spring Boot 기반의 상품 및 주문 관리 API 시스템입니다. 본 프�
 
 ## 📦 패키지 구조 (Package Structure)
 
+
 ```text
 com.precamp.shop
  ├── 📁 common
@@ -40,14 +41,6 @@ com.precamp.shop
  │
  └── ShopApplication             # 메인 실행 클래스
 ```
-### 1\. 패키지 설계 기준
-
--   **controller**: HTTP 요청/응답 처리 및 DTO 매핑을 담당합니다.
--   **service**: 비즈니스 로직을 수행하고 트랜잭션을 관리합니다.
--   **domain**: 핵심 도메인 모델(JPA Entity) 및 도메인 로직을 포함합니다.
--   **dto**: 계층 간 데이터 전송을 위한 전용 객체입니다.
--   **exception**: 도메인 및 비즈니스 관련 커스텀 예외를 정의합니다.
--   **common**: 공통 응답 구조 및 베이스 엔티티를 관리합니다.
 
 ---
 
@@ -63,6 +56,35 @@ com.precamp.shop
     -   주문은 하나의 상품에만 속합니다. (ManyToOne)
     -   주문 생성/수정/취소 시 **상품 재고를 직접 제어**합니다.
     -   주문 상태(ORDER, CANCEL)로 생명주기를 관리합니다.
+
+---
+
+## ⚡ 주요 성능 최적화 및 동시성 제어
+
+### 1\. N+1 문제 해결 (Fetch Join)
+
+주문 목록 조회 및 상세 조회 시, 연관된 Product 엔티티를 함께 조회할 때 발생하는 성능 저하 문제를 해결했습니다.
+
+-   **문제**: 기본 조회 시 주문 건수만큼 상품 조회 쿼리가 발생하는 N+1 문제 발생.
+-   **해결**: OrderRepository에서 join fetch를 사용하여 단 한 번의 쿼리로 주문과 상품 정보를 함께 조회하도록 최적화했습니다.
+
+```java
+    //OrderRepository.java
+    
+    @Query("select o from Order o join fetch o.product")
+    List<Order> findAll();
+    
+    @Query("select o from Order o join fetch o.product where o.id = :id")
+    Optional<Order> findById(@Param("id") Long orderId);
+    boolean existsByProductId(Long productId);
+```    
+
+### 2\. 재고 정합성 보장 (Pessimistic Lock)
+
+동시에 여러 사용자가 같은 상품을 주문할 경우 발생할 수 있는 레이스 컨디션(Race Condition)을 방지합니다.
+
+-   **해결**: 상품 조회 시 비관적락(PESSIMISTIC\_WRITE)을 사용하여, 트랜잭션이 완료될 때까지 다른 트랜잭션의 접근을 제어하고 정확한 재고 차감을 보장합니다.
+-   **비관적 락 선정 이유** : 주문 시스템은 동시 접근이 빈번하므로 비관적 락으로 순차 처리하여 재고 정합성을 보장하기에 용이했습니다. 낙관적락의 경우 충돌 시 재시도 부담이 크게 때문에 이 경우에는 부적합하다고 판단했습니다. 
 
 ---
 
@@ -90,11 +112,22 @@ com.precamp.shop
 
 ---
 
+## 🖼 Swagger / Postman API 실행 결과
+
+| **기능** | **실행 결과 (스크린샷)** | 실행 SQL |
+| --- | - | - |
+| **상품 목록 조회** |![img.png](src/docs/images/img.png) |   |
+| **주문 생성 (재고 차감)** | ![img_1.png](src/docs/images/img_1.png) |   |
+| **주문 상세 조회 (Fetch Join 적용)** | ![img_2.png](src/docs/images/img_2.png) | ![img_3.png](src/docs/images/img_3.png) |
+
+---
+
 ## 📌 설계 포인트
 
 -   **도메인 중심 설계**: 재고 차감 및 복구 로직을 엔티티 내부에 구현하여 응집도를 높였습니다.
 -   **안정적인 응답**: ApiResponse를 통해 모든 API 응답 형식을 통일했습니다.
 -   **데이터 보존**: Soft Delete를 적용하여 삭제 시 실제 데이터를 지우지 않고 상태값만 변경합니다.
+-   **데이터 무결성**: 비관적 락과 Fetch Join을 통해 성능과 데이터 정확성을 동시에 확보했습니다.
 
 ---
 
