@@ -97,6 +97,39 @@ private Product getProduct(Long productId) {
 @Query("SELECT p FROM Product p WHERE p.id = :id AND p.status != 'DELETED'")
 Optional<Product> findByIdWithLock(@Param("id") Long id);
 ```
+#### ✅ 동시성 테스트 시나리오
+
+비관적 락의 정상 동작을 확인하기 위해 다음과 같은 한계 테스트를 진행했습니다.
+
+-   **상태**: 상품 재고 **5개** 존재
+-   **작업**: 10명의 사용자가 **동시에** 해당 상품을 1개씩 주문 (총 10번의 요청)
+-   **기대 결과**:
+    -   5건의 주문은 성공적으로 처리되어 재고가 0이 됨.
+    -   나머지 5건은 "재고 부족" 예외(BusinessException)를 발생시키며 실패.
+    -   **결과적으로 재고가 음수(-)가 되지 않아야 함.**
+
+#### 🖥️ Git Bash를 이용한 테스트 실행
+curl 명령어를 백그라운드에서 동시에 실행하는 쉘 스크립트를 통해 동시성 테스트를 재현했습니다.
+
+
+```bash
+# 10번의 주문 요청을 동시에 보냄 (&를 붙여 병렬 실행)
+for i in {1..10}
+do
+  curl -X POST http://localhost:8080/orders \
+       -H "Content-Type: application/json" \
+       -d '{"productId": 2, "orderCount": 1}' &
+done
+```
+
+#### 📊 테스트 결과 (스크린샷)
+
+| **항목** | **실행 결과 (스크린샷)** |
+| --- | --- |
+| **Git Bash 실행 로그** | ![img.png](src/docs/images/test_gitbash.png) |
+| **DB 최종 재고 확인 (0개)** |   ![img_1.png](src/docs/images/test_selectOrders.png)![img_2.png](src/docs/images/test_selectProducts.png)|
+
+> **Note**: 비관적 락이 적용되지 않았을 경우, 레이스 컨디션으로 인해 재고가 -5가 되거나 데이터 정합성이 깨지는 현상이 발생할 수 있으나, 본 프로젝트는 락을 통해 이를 완벽히 방지했습니다.
 ---
 
 ## 🌐 API 엔드포인트
