@@ -71,7 +71,7 @@ public class Product extends BaseEntity {
     public void decreaseStock(int stock) {
         int restStock = this.stockQuantity - stock;
         if(restStock < 0){
-            throw new InsufficientStockException(this.name, restStock, this.stockQuantity);
+            throw new InsufficientStockException(this.name, stock, this.stockQuantity);
         }
         this.stockQuantity = restStock;
 

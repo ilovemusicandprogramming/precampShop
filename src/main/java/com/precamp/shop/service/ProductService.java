@@ -2,10 +2,10 @@ package com.precamp.shop.service;
 
 import com.precamp.shop.domain.Product;
 import com.precamp.shop.domain.status.ProductStatus;
-import com.precamp.shop.dto.ProductCreateRequest;
-import com.precamp.shop.dto.ProductListResponse;
-import com.precamp.shop.dto.ProductPatchRequest;
-import com.precamp.shop.dto.ProductResponse;
+import com.precamp.shop.dto.product.ProductCreateRequest;
+import com.precamp.shop.dto.product.ProductListResponse;
+import com.precamp.shop.dto.product.ProductPatchRequest;
+import com.precamp.shop.dto.product.ProductResponse;
 import com.precamp.shop.exception.ProductCannotBeDeletedException;
 import com.precamp.shop.exception.ProductNotFoundException;
 import com.precamp.shop.repository.OrderRepository;

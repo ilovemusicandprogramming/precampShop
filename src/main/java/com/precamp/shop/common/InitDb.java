@@ -1,11 +1,10 @@
 package com.precamp.shop.common;
 
-import com.precamp.shop.dto.ProductCreateRequest;
+import com.precamp.shop.dto.product.ProductCreateRequest;
 import com.precamp.shop.service.ProductService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,9 +38,6 @@ public class InitDb {
             // 주변기기
             createProduct("로지텍 MX Master 3", 120_000, 50, "프로용 무선 마우스");
             createProduct("매직 키보드", 150_000, 30, "애플 매직 키보드");
-
-            // 품절 테스트용
-            createProduct("단종된 마우스", 10_000, 0, "재고 없음 - 테스트용");
 
             log.info("===== 초기 데이터 생성 완료 =====");
         }

@@ -67,6 +67,7 @@ public class Order extends BaseEntity {
         }
 
         this.orderCount = newOrderCount;
+        this.orderPrice = product.getPrice() * orderCount;
     }
 
     public void cancel() {

@@ -2,10 +2,10 @@ package com.precamp.shop.service;
 
 import com.precamp.shop.domain.Order;
 import com.precamp.shop.domain.Product;
-import com.precamp.shop.dto.OrderCreateRequest;
-import com.precamp.shop.dto.OrderListResponse;
-import com.precamp.shop.dto.OrderResponse;
-import com.precamp.shop.dto.OrderUpdateRequest;
+import com.precamp.shop.dto.order.OrderCreateRequest;
+import com.precamp.shop.dto.order.OrderListResponse;
+import com.precamp.shop.dto.order.OrderResponse;
+import com.precamp.shop.dto.order.OrderUpdateRequest;
 import com.precamp.shop.exception.OrderNotFoundException;
 import com.precamp.shop.exception.ProductNotFoundException;
 import com.precamp.shop.repository.OrderRepository;
@@ -36,8 +36,7 @@ public class OrderService {
 
     @Transactional
     public OrderResponse createOrder(OrderCreateRequest request) {
-        Product product = getProduct(request.productId());
-        Order order = Order.createOrder(product, request.orderCount());
+        Order order = Order.createOrder(getProduct(request.productId()), request.orderCount());
         orderRepository.save(order);
         return OrderResponse.from(order);
     }
