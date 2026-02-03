@@ -6,6 +6,7 @@ import com.precamp.shop.dto.product.ProductCreateRequest;
 import com.precamp.shop.dto.product.ProductListResponse;
 import com.precamp.shop.dto.product.ProductPatchRequest;
 import com.precamp.shop.dto.product.ProductResponse;
+import com.precamp.shop.exception.ProductAlreadyDeletedException;
 import com.precamp.shop.exception.ProductCannotBeDeletedException;
 import com.precamp.shop.exception.ProductNotFoundException;
 import com.precamp.shop.repository.OrderRepository;
@@ -62,10 +63,10 @@ public class ProductService {
     //===== 기타메서드 =====
     private Product getProduct(Long productId) {
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ProductNotFoundException("검색하신 상품은 존재하지 않습니다."));
+                .orElseThrow(() -> new ProductNotFoundException(productId));
 
         if (product.getStatus() == ProductStatus.DELETED) {
-            throw new IllegalStateException("이미 삭제된 상품입니다.");
+            throw new ProductAlreadyDeletedException();
         }
         return product;
     }
