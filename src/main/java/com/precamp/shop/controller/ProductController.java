@@ -24,9 +24,10 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping
-    @Operation(summary = "상품 목록 조회")
-    public ApiResponse<List<ProductListResponse>> getProducts(){
-        return ApiResponse.success(productService.findProducts(), "상품 목록 조회 성공");
+    @Operation(summary = "상품 목록 조회(페이징 적용)")
+    public ApiResponse<List<ProductListResponse>> getProducts(@RequestParam(value = "offset", defaultValue = "0") int offset,
+                                                              @RequestParam(value = "limit", defaultValue = "100") int limit){
+        return ApiResponse.success(productService.findProducts(offset, limit), "상품 목록 조회 성공");
     }
 
     @GetMapping("/{productId}")

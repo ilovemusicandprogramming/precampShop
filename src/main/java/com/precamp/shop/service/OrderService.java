@@ -11,6 +11,7 @@ import com.precamp.shop.exception.ProductNotFoundException;
 import com.precamp.shop.repository.OrderRepository;
 import com.precamp.shop.repository.ProductRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -23,8 +24,10 @@ public class OrderService {
     private final ProductRepository productRepository;
 
     @Transactional(readOnly = true)
-    public List<OrderListResponse> findOrders() {
-        return orderRepository.findAll().stream()
+    public List<OrderListResponse> findOrders(int offset, int limit) {
+        PageRequest pageRequest = PageRequest.of(offset / limit, limit);
+
+        return orderRepository.findAll(pageRequest).stream()
                 .map(OrderListResponse::new)
                 .toList();
     }

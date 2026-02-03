@@ -39,6 +39,11 @@ public class InitDb {
             createProduct("로지텍 MX Master 3", 120_000, 50, "프로용 무선 마우스");
             createProduct("매직 키보드", 150_000, 30, "애플 매직 키보드");
 
+            // 페이지네이션 테스트를 위한 자동 생성 데이터
+            for (int i = 1; i <= 200; i++) {
+                createProduct("테스트 상품 " + i, 10_000 + (i * 1000), i + 10, "페이징 테스트용 상품 상세 설명 " + i);
+            }
+
             log.info("===== 초기 데이터 생성 완료 =====");
         }
 

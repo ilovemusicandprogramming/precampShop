@@ -24,9 +24,10 @@ public class OrderController {
     private final OrderService orderService;
 
     @GetMapping
-    @Operation(summary = "주문 목록 조회")
-    public ApiResponse<List<OrderListResponse>> getOrders(){
-        return ApiResponse.success(orderService.findOrders(), "주문 목록 조회 성공");
+    @Operation(summary = "주문 목록 조회(페이징 적용)")
+    public ApiResponse<List<OrderListResponse>> getOrders(@RequestParam(value = "offset", defaultValue = "0") int offset,
+                                                          @RequestParam(value = "limit", defaultValue = "100") int limit){
+        return ApiResponse.success(orderService.findOrders(offset, limit), "주문 목록 조회 성공");
     }
 
     @GetMapping("/{orderId}")
