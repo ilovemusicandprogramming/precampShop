@@ -89,8 +89,8 @@ Optional<Order> findById(@Param("id") Long orderId);
 
 | **항목** | **실행 결과 및 로그 (스크린샷)** |
 | --- | --- |
-| **SQL 실행 로그** | ![img.png](paging1.png) |
-| **Swagger 결과** | ![img.png](paging2.png)![img.png](paging3.png)|
+| **SQL 실행 로그** | ![img.png](src/docs/images/paging1.png) |
+| **Swagger 결과** | ![img.png](src/docs/images/paging2.png)![img.png](src/docs/images/paging3.png)|
 
 ### 2\. 재고 정합성 보장 (Pessimistic Lock)
 
