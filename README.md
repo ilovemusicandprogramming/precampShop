@@ -61,23 +61,36 @@ com.precamp.shop
 
 ## ⚡ 주요 성능 최적화 및 동시성 제어
 
-### 1\. N+1 문제 해결 (Fetch Join)
+### 1\. N+1 문제 해결 및 페이징 최적화 (Fetch Join & Batch Size)
 
-주문 목록 조회 및 상세 조회 시, 연관된 Product 엔티티를 함께 조회할 때 발생하는 성능 저하 문제를 해결했습니다.
+단순 조회 시 발생하는 N+1 문제를 해결함과 동시에, JPA 사용 시 가장 까다로운 \*\*'페치 조인과 페이징 병행 처리'\*\*를 최적화했습니다.
 
--   **문제**: 기본 조회 시 주문 건수만큼 상품 조회 쿼리가 발생하는 N+1 문제 발생.
--   **해결**: OrderRepository에서 join fetch를 사용하여 단 한 번의 쿼리로 주문과 상품 정보를 함께 조회하도록 최적화했습니다.
+-   **문제**:
+    -   기본 조회 시 주문 건수만큼 상품 조회 쿼리가 발생하는 **N+1 문제**.
+    -   일대다(1:N) 관계에서 페치 조인 적용 시, 데이터 뻥튀기 현상으로 인해 **DB 레벨의 페이징(Limit/Offset) 불가능** 및 메모리 과부하 위험.
+-   **해결**:
+    -   **ToOne 관계(Order → Product)**: join fetch를 사용하여 쿼리 1번으로 최적화. (N:1 관계이므로 페이징 시 Row 수 변동 없음)
+    -   **컬렉션 관계**: 향후 확장성을 고려하여 default\_batch\_fetch\_size를 설정, 지연 로딩 시 IN 쿼리를 통해 최적화된 개수만큼 묶어서 조회.
+
 
 ```java
-    //OrderRepository.java
-    
-    @Query("select o from Order o join fetch o.product")
-    List<Order> findAll();
-    
-    @Query("select o from Order o join fetch o.product where o.id = :id")
-    Optional<Order> findById(@Param("id") Long orderId);
-    boolean existsByProductId(Long productId);
-```    
+// OrderRepository.java
+// JpaRepository의 findAll을 오버라이딩하여 페치 조인과 페이징을 동시에 처리
+@Override
+@Query("select o from Order o join fetch o.product")
+Page<Order> findAll(Pageable pageable);
+
+//fetch join
+@Query("select o from Order o join fetch o.product where o.id = :id")
+Optional<Order> findById(@Param("id") Long orderId);
+```
+
+#### 📊 페이징 쿼리 실행 결과 (로그 스크린샷 필요)
+
+| **항목** | **실행 결과 및 로그 (스크린샷)** |
+| --- | --- |
+| **SQL 실행 로그** | ![img.png](paging1.png) |
+| **Swagger 결과** | ![img.png](paging2.png)![img.png](paging3.png)|
 
 ### 2\. 재고 정합성 보장 (Pessimistic Lock)
 
@@ -133,6 +146,18 @@ done
 ---
 
 ## 🌐 API 엔드포인트
+
+---
+
+### 🛠 API 명세서 (Swagger UI)
+
+로컬 환경에서 프로젝트 실행 후, 아래 주소를 통해 대화형 API 명세서를 확인할 수 있습니다.
+
+-   **Swagger UI 주소**: [http://localhost:8080/swagger-ui.html](https://www.google.com/search?q=http://localhost:8080/swagger-ui.html)
+-   **주요 기능**:
+    -   전체 API 엔드포인트 시각화
+    -   페이징 파라미터(offset, limit) 테스트
+    -   API 응답 구조(Schema) 확인 및 즉시 호출 테스트
 
 ### 📦 Product API (상품 관리)
 
